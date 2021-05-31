@@ -1,0 +1,1 @@
+A collection of simple snake games written in Python, using multiple graphical user interfaces
