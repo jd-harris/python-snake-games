@@ -7,6 +7,11 @@ sh, sw = s.getmaxyx()  # get the height and the width
 w = curses.newwin(sh, sw, 0, 0)  # create a new window from the height and width, and start it at the top left corner of screen # nopep8
 w.keypad(1)  # accept keypad input
 w.timeout(100)  # refresh the screen every 100 milliseconds
+curses.start_color()  # Initialize color in a separate step
+
+# Create a custom color set that you might re-use frequently
+# Assign it a number (1-255), a foreground, and background color.
+curses.init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
 
 # Create snakes initial position
 snk_x = int(sw/4)  # the 'x' will be the width of screen divided by four
@@ -37,17 +42,13 @@ key = curses.KEY_RIGHT
 
 # infinite loop for every movement of the snake
 while True:
+    prev_key = key  # store the previously pressed key
     next_key = w.getch()  # see what the next key is
     key = key if next_key == -1 else next_key
 
     # check if person has lost the game
-    """ you will lose if:
-               1) the y position is at the top/height of screen or
-               2) the x position is to the left/width of screen or
-               3) the   position is at the bottom of screen or
-               4) the   position is at the right of screen or
-               5) your snake is in itself    """
-    if snake[0][0] in [0, sh] or snake[0][1] in [0, sw] or snake[0][0] in [0, sh-1] or snake[0][1] in [0, sw-1] or snake[0] in snake[1:]:
+    # you will lose if snake is in snake body
+    if snake[0] in snake[1:]:
         w.clear()  # Clear the screen
         # Display 'Game Over' in center screen
         w.addstr(int(sh/2), int(int(sw/2) - half_len_msg), end_msg)
@@ -68,6 +69,26 @@ while True:
         new_head[1] -= 1
     if key == curses.KEY_RIGHT:
         new_head[1] += 1
+    if key == ord(' '):  # (pause/resume based on Space Bar)
+        key = -1
+        while key != ord(' '):
+            key = w.getch()
+        key = prev_key
+        continue
+
+    # check if snake goes off screen
+    # if it goes beyond left wall
+    if snake[0][1] in [0] and snake[1][1] in [1]:
+        new_head[1] = int(sw-1)
+    # if it goes beyond right wall
+    if snake[0][1] in [sw-1] and snake[1][1] in [sw-2]:
+        new_head[1] = int(1)
+    # if it goes beyond bottom wall
+    if snake[0][0] in [sh-1] and snake[1][0] in [sh-2]:
+        new_head[0] = int(1)
+    # if it goes beyond top wall
+    if snake[0][0] in [0] and snake[1][0] in [1]:
+        new_head[0] = int(sh-1)
 
     # insert the new head of snake
     snake.insert(0, new_head)
@@ -91,4 +112,5 @@ while True:
         w.addch(tail[0], tail[1], ' ')
 
     # add the head of the snake to the screen
-    w.addch(snake[0][0], snake[0][1], curses.ACS_CKBOARD)
+    # ACS_CKBOARD adds a checker board (stipple) to screen
+    w.addch(snake[0][0], snake[0][1], curses.ACS_CKBOARD, curses.color_pair(1))

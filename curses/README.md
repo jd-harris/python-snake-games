@@ -4,7 +4,7 @@ A simple snake game written in Python, using Curses as the graphical user interf
 
 The idea and the approach was modified from this video [Creating a Snake game with Python in under 5 minutes.](https://www.youtube.com/watch?v=rbasThWVb-c)
 
-![](snake_curses.gif)
+![](snake_curses1.gif)
 
 # Installation
 The Curses package comes with the Python standard library. Linux and Mac users should be ready to go but Windows users will need to install [windows-curses](https://pypi.org/project/windows-curses/)
@@ -27,3 +27,5 @@ Example
 Next, type 'snake_curses.py' into Command Prompt and hit enter. The game will begin to run.
 
 Use the arrow keys to move the snake around the screen. Run into the pie to eat it and increase your score.
+
+Press the space bar to pause/resume the game.
