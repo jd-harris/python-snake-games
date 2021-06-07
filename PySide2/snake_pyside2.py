@@ -3,11 +3,16 @@ from PySide2 import QtWidgets, QtGui, QtCore
 import random
 import sys
 
+import res  # Import resources file
 
 # creating game window
+
+
 class Window(QtWidgets.QMainWindow):
     def __init__(self):
         super(Window, self).__init__()
+        # set window icon to image from resource file
+        self.setWindowIcon(QtGui.QIcon(":/1/py_icon1.png"))
         self.board = Board(self)  # creating a board object
         self.statusbar = self.statusBar()  # creating a status bar to show result
         # adding border to the status bar
@@ -39,6 +44,7 @@ class Board(QtWidgets.QFrame):
         self.grow_snake = False  # growing is false
         self.board = []  # board list
         self.direction = 1  # direction
+        self.is_paused = False  # pause is false
         self.drop_food()  # called drop food method
         self.setFocusPolicy(QtGui.Qt.StrongFocus)  # setting focus
 
@@ -81,32 +87,46 @@ class Board(QtWidgets.QFrame):
     # key press event
     def keyPressEvent(self, event):
         key = event.key()  # getting key pressed
+        # prev_key = key  # store the previously pressed key
         # if left key pressed
-        if key == QtGui.Qt.Key_Left:
-            # if direction is not right
-            if self.direction != 2:
-                # set direction to left
-                self.direction = 1
-        # if right key is pressed
-        elif key == QtGui.Qt.Key_Right:
-            # if direction is not left
-            if self.direction != 1:
-                # set direction to right
-                self.direction = 2
-        # if down key is pressed
-        elif key == QtGui.Qt.Key_Down:
-            # if direction is not up
-            if self.direction != 4:
-                # set direction to down
-                self.direction = 3
-        # if up key is pressed
-        elif key == QtGui.Qt.Key_Up:
-            # if direction is not down
-            if self.direction != 3:
-                # set direction to up
-                self.direction = 4
+        if not self.is_paused:
+            if key == QtGui.Qt.Key_Left:
+                # if direction is not right
+                if self.direction != 2:
+                    # set direction to left
+                    self.direction = 1
+            # if right key is pressed
+            elif key == QtGui.Qt.Key_Right:
+                # if direction is not left
+                if self.direction != 1:
+                    # set direction to right
+                    self.direction = 2
+            # if down key is pressed
+            elif key == QtGui.Qt.Key_Down:
+                # if direction is not up
+                if self.direction != 4:
+                    # set direction to down
+                    self.direction = 3
+            # if up key is pressed
+            elif key == QtGui.Qt.Key_Up:
+                # if direction is not down
+                if self.direction != 3:
+                    # set direction to up
+                    self.direction = 4
+            # if space bar is pressed
+            elif key == QtGui.Qt.Key_Space:
+                self.msg2statusbar.emit('Game Paused')
+                self.is_paused = True
+                self.timer.stop()
+        # if paused and space bar is pressed
+        elif key == QtGui.Qt.Key_Space:
+            self.msg2statusbar.emit('Score: ' + str(len(self.snake)-2))
+            self.is_paused = False
+            self.timer.start(Board.SPEED, self)
+            self.update()
 
     # method to move the snake
+
     def move_snake(self):
         # if direction is left change its position
         if self.direction == 1:
@@ -166,7 +186,8 @@ class Board(QtWidgets.QFrame):
             # if collision found
             if self.snake[i] == self.snake[0]:
                 # show game ended msg in status bar
-                self.msg2statusbar.emit(str("Game Ended"))
+                self.msg2statusbar.emit(
+                    str("Game Ended-" + "Your Score: " + str(len(self.snake)-2)))
                 # making background color black
                 self.setStyleSheet("background-color : black;")
                 # stopping the timer
