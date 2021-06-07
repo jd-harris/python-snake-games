@@ -34,8 +34,13 @@ score = 0
 w.addstr(int(sh-1), 0, f"Score:{score}")
 
 # Message that will be displayed at the end of game
-end_msg = 'Game Over'
-half_len_msg = int(len(end_msg)/2)
+end_msg = """ 
+ ██████   █████  ███    ███ ███████      ██████  ██    ██ ███████ ██████  
+██       ██   ██ ████  ████ ██          ██    ██ ██    ██ ██      ██   ██ 
+██   ███ ███████ ██ ████ ██ █████       ██    ██ ██    ██ █████   ██████  
+██    ██ ██   ██ ██  ██  ██ ██          ██    ██  ██  ██  ██      ██   ██ 
+ ██████  ██   ██ ██      ██ ███████      ██████    ████   ███████ ██   ██ 
+"""
 
 # tell snake where to go initially
 key = curses.KEY_RIGHT
@@ -50,8 +55,8 @@ while True:
     # you will lose if snake is in snake body
     if snake[0] in snake[1:]:
         w.clear()  # Clear the screen
-        # Display 'Game Over' in center screen
-        w.addstr(int(sh/2), int(int(sw/2) - half_len_msg), end_msg)
+        # Display 'Game Over' on screen
+        w.addstr(int(sh/2), int(sw/2), end_msg)
         w.refresh()
         curses.napms(3000)
         curses.endwin()  # kill window
