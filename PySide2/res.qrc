@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="1">
+    <file>py_icon.png</file>
+    <file>py_icon1.png</file>
+  </qresource>
+</RCC>
